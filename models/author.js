@@ -14,13 +14,13 @@ AuthorSchema
     .get( function () {
 // To avoid errors when an author has no family name or no first name
 // We handle the exception by returning an empty string for that case
-  console.log("FN: " + this.first_name, "LN: " + this.family_name)
-    let fullname = 'default thing';
+
+    let fullname = '';
     if (this.first_name && this.family_name) {
         fullname = this.family_name + ', ' + this.first_name
     }
     if (!this.first_name || !this.family_name) {
-        fullname = 'some other thing';
+        fullname = '';
     }
 
     return fullname;

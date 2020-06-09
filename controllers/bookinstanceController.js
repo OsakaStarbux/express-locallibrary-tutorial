@@ -54,10 +54,10 @@ exports.bookinstance_create_post = [
     body('due_back', 'Invalid date').optional({ checkFalsy: true }).isISO8601(),
 
     // Sanitize fields.
-    sanitizeBody('book').escape(),
-    sanitizeBody('imprint').escape(),
-    sanitizeBody('status').trim().escape(),
-    sanitizeBody('due_back').toDate(),
+    body('book').escape(),
+    body('imprint').escape(),
+    body('status').trim().escape(),
+    body('due_back').toDate(),
 
     // Process request after validation and sanitization.
     (req, res, next) => {

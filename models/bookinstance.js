@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const moment = require('moment')
+const { DateTime } = require("luxon");
 const Schema = mongoose.Schema;
 
 const BookInstanceSchema = new Schema(
@@ -21,7 +21,8 @@ BookInstanceSchema
 BookInstanceSchema
     .virtual('due_back_formatted')
     .get(function () {
-      return moment(this.due_back).format('MMMM Do, YYYY');
-    });
+  return DateTime.fromJSDate(this.due_back).toLocaleString(DateTime.DATE_MED);
+});
+
 //Export model
 module.exports = mongoose.model('BookInstance', BookInstanceSchema);

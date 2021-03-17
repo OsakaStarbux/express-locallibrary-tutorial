@@ -98,13 +98,58 @@ exports.genre_create_post =  [
 ];
 
 // Display Genre delete form on GET.
-exports.genre_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: Genre delete GET');
+// If there are references to the object from other objects, then these other objects should be displayed along with a note that this record can't be deleted until the listed objects have been deleted.
+// If there are no other references to the object then the view should prompt to delete it. If the user presses the Delete button, the record should then be deleted.
+// A few tips:
+//
+// Deleting a Genre is just like deleting an Author as both objects are dependencies of Book (so in both cases you can delete the object only when the associated books are deleted).
+// Deleting a Book is also similar, but you need to check that there are no associated BookInstances.
+// Deleting a BookInstance is the easiest of all because there are no dependent objects. In this case, you can just find the associated record and delete it.
+exports.genre_delete_get = function(req, res, next) {
+
+  async.parallel({
+      genre: function(callback) {
+          Genre.findById(req.params.id).exec(callback)
+      },
+      genre_books: function(callback) {
+        Book.find({ 'genre': req.params.id }).exec(callback)
+      },
+  }, function(err, results) {
+      if (err) { return next(err); }
+      if (results.genre==null) { // No results.
+          res.redirect('/catalog/genres');
+      }
+      // Successful, so render.
+      res.render('genre_delete', { title: 'Delete Genre', genre: results.genre, genre_books: results.genre_books } );
+  });
 };
 
 // Handle Genre delete on POST.
 exports.genre_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: Genre delete POST');
+  async.parallel({
+    genre: function(callback) {
+      Genre.findById(req.body.genreid).exec(callback)
+    },
+    genre_books: function(callback) {
+      Book.find({ 'genre': req.body.genreid }).exec(callback)
+    },
+}, function(err, results) {
+    if (err) { return next(err); }
+    // Success
+    if (results.genre_books.length > 0) {
+        // Genre has books. Render in same way as for GET route.
+        res.render('genre_delete', { title: 'Delete Genre', genre: results.genre_books, genre_books: results.genre_books } );
+        return;
+    }
+    else {
+        // Genre has no books. Delete object and redirect to the list of genres.
+        Genre.findByIdAndRemove(req.body.genreid, function deleteGenre(err) {
+            if (err) { return next(err); }
+            // Success - go to Genre list
+            res.redirect('/catalog/genres')
+        })
+    }
+});
 };
 
 // Display Genre update form on GET.

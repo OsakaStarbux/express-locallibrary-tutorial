@@ -102,14 +102,14 @@ exports.book_create_post = [
         next();
     },
 
-    // Validate fields.
-    body('title', 'Title must not be empty.').trim().isLength({ min: 1 }),
-    body('author', 'Author must not be empty.').trim().isLength({ min: 1 }),
-    body('summary', 'Summary must not be empty.').trim().isLength({ min: 1 }),
-    body('isbn', 'ISBN must not be empty').trim().isLength({ min: 1 }),
+  
 
-    // Sanitize fields (using wildcard).
-    body('*').escape(),
+    // Validate and sanitise fields.
+  body('title', 'Title must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('author', 'Author must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('summary', 'Summary must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('isbn', 'ISBN must not be empty').trim().isLength({ min: 1 }).escape(),
+  body('genre.*').escape(),
 
     // Process request after validation and sanitization.
     (req, res, next) => {

@@ -95,13 +95,41 @@ exports.bookinstance_create_post = [
 ];
 
 // Display BookInstance delete form on GET.
-exports.bookinstance_delete_get = function(req, res) {
-    res.send('NOT IMPLEMENTED: BookInstance delete GET');
+exports.bookinstance_delete_get = function(req, res, next) {
+    // res.send('NOT IMPLEMENTED: BookInstance delete GET');
+    BookInstance.findById(req.params.id)
+    .populate({
+      path:'book',
+      model: 'Book',
+      populate: {
+      path: 'author',
+      model: 'Author'
+      }
+    })
+
+    .exec(function (err, bookinstance) {
+      if (err) { return next(err); }
+      if (bookinstance==null) { // No results.
+          var err = new Error('Book copy not found');
+          err.status = 404;
+          return next(err);
+        }
+      // Successful, so render.
+      res.render('bookinstance_delete', { title: 'Copy: '+bookinstance.book.title, bookinstance:  bookinstance});
+    })
+
+
 };
 
 // Handle BookInstance delete on POST.
-exports.bookinstance_delete_post = function(req, res) {
-    res.send('NOT IMPLEMENTED: BookInstance delete POST');
+exports.bookinstance_delete_post = function(req, res, next) {
+    // res.send('NOT IMPLEMENTED: BookInstance delete POST');
+    BookInstance.findByIdAndRemove(req.body.bookinstanceid, function deleteBookInstance(err, deletedInstance) {
+               if (err) { return next(err); }
+               // Success - go to book
+
+               res.redirect('/catalog/book/'+deletedInstance.book)
+           })
 };
 
 // Display BookInstance update form on GET.

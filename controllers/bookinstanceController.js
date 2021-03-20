@@ -1,7 +1,6 @@
 const BookInstance = require('../models/bookinstance');
 const Book = require('../models/book');
 const { body, validationResult } = require('express-validator');
-const bookinstance = require('../models/bookinstance');
 const async = require('async');
 
 // Display list of all BookInstances.
@@ -201,4 +200,5 @@ exports.bookinstance_update_post = [
       });
 
     }
-  }]
+  }
+]

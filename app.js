@@ -9,7 +9,8 @@ const mongoose = require('mongoose')
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog');
-
+const compression = require('compression');
+const helmet = require('helmet');
 const app = express();
 
 mongoose
@@ -33,7 +34,10 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(compression()); //Compress all routes
+app.use(helmet());
 app.use(express.static(path.join(__dirname, 'public')));
+
 // Routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
